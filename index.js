@@ -1,26 +1,28 @@
 const express = require("express");
-const bodyParser = require("body-parser");
+const logger = require('morgan');
 const cors = require("cors");
-
+const config = require('dotenv').config();
 const app = express();
 
-var corsOptions = {
-    origin: "http://localhost:8081"
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
+app.use(logger('dev'));
 
 // parse requests of content-type - application/json
-app.use(bodyParser.json());
+app.use(express.json());
 
 // parse requests of content-type - application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({
+app.use(express.urlencoded({
     extended: true
 }));
 
+//default error
+app.use((err, req, res, next) => {
+    res.send(err.message)
+})
+
 const db = require("./app/models");
 db.sequelize.sync();
-// drop the table if it already exists
+// // drop the table if it already exists
 // db.sequelize.sync({
 //     force: true
 // }).then(() => {
